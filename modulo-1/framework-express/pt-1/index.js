@@ -36,7 +36,7 @@ app.get("/tesParam/:id", (req, res) => {
     res.send(req.params.id)
 })
 
-// parametros via query
+// Passar parametros via query
 app.get("/testQuery", (req, res) => {
     res.send(req.query)
 })
@@ -45,6 +45,28 @@ app.get("/testQuery", (req, res) => {
 app.get("/", (req, res) => {
     res.send("Express ok ")
 })
+
+// next
+app.get("/testNext", (req, res, next) => {
+    console.log("callback 1")
+    next()
+}, (req, res) => {
+    console.log("callback 2")
+    res.send()
+})
+
+// route
+app.route("/route")
+    .get((req, res) => {
+        res.send("/testRoute GET")
+    })
+    .post((req, res) => {
+        res.send("/testRoute POST")
+    })
+    .put((req, res) => {
+        res.send("/testRoute PUT")
+    })
+    
 
 app.listen(8080, () => {
     console.log("api started")
