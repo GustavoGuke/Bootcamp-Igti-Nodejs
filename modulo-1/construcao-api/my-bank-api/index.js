@@ -15,7 +15,6 @@ app.listen(3000, async () => {
         accounts: []
     }
     try {
-      
         await readFile("accounts.json")
         
     } catch (error) {
