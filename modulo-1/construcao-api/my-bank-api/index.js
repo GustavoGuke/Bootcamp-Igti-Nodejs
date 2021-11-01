@@ -3,7 +3,7 @@ import accountsRouter from "./routes/accounts.js"
 import {promises as fs} from "fs"
 
 
-const {readFile, writeFile, appendFile} = fs
+const {readFile, writeFile} = fs
 const app = express()
 app.use(express.json())
 global.filename = "account.json"

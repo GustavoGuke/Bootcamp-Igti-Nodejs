@@ -1,25 +1,33 @@
-import express, { json } from "express"
+import express from "express"
 import { promises as fs } from "fs"
-import { parse } from "path"
-import { stringify } from "querystring"
 
 
-const { readFile, writeFile, appendFile } = fs
+
+const { readFile, writeFile} = fs
 const router = express.Router()
 
 
 
-router.post("/", async (req, res) => {
+router.post("/", async (req, res, next) => {
 
     try {
         // pegar dados do usuario
         let account = req.body
 
+        // tratando erros
+        if (!account.name || account.balance == null) {
+            throw new Error("Name e balance são obrigatório")
+        }
+
         // ler arquivo json
         const data = JSON.parse(await readFile(global.filename))
 
         // acrescentar meu id a cada dado colocado pelo usuario
-        account = { id: data.nextId++, ...account }
+        account = { 
+            id: data.nextId++, 
+            name: account.name,
+            balance: account.balance
+         }
 
         // colocar os dados no array
         data.accounts.push(account)
@@ -31,32 +39,32 @@ router.post("/", async (req, res) => {
         res.send(account)
 
     } catch (error) {
-        res.status(400).send({ error: error.message })
+        next(err)
     }
 })
 
 
-router.get("/", async (req, res) => {
+router.get("/", async (req, res, next) => {
     try {
         const data = JSON.parse(await readFile(global.filename))
         delete data.nextId
         res.send(data)
     } catch (error) {
-        res.status(400).send({ error: error.message })
+        next(err)
     }
 })
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", async (req, res, next) => {
     try {
         const data = JSON.parse(await readFile(global.filename))
         let filterId = data.accounts.find(ide => ide.id == req.params.id)
         res.send(filterId)
     } catch (error) {
-        res.status(400).send({ error: error.message })
+        next(err)
     }
 })
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", async (req, res, next) => {
     try {
         const data = JSON.parse(await readFile(global.filename))
         data.accounts = data.accounts.filter(ide => ide.id !== parseInt(req.params.id))
@@ -65,43 +73,68 @@ router.delete("/:id", async (req, res) => {
 
         res.send()
     } catch (error) {
-        res.status(400).send({ error: error.message })
+        next(err)
     }
 })
 
-router.put("/", async (req, res) => {
+router.put("/", async (req, res, next) => {
     try {
 
+
         let update = req.body
+
+        // tratando erros
+        if (!update.name || update.balance == null) {
+            throw new Error("Name e balance são obrigatório")
+        }
         const data = JSON.parse(await readFile(global.filename))
         let index = data.accounts.findIndex(idu => idu.id == update.id)
 
-        data.accounts[index] = update
+        if (index === -1){
+            throw new Error("Registro inválido")
+        }
+
+        data.accounts[index].name = update.name
+        data.accounts[index].balance = update.balance
         await writeFile(global.filename, JSON.stringify(data, null, 2))
         console.log(index)
 
         res.send(update)
-    } catch (error) {
-        res.status(400).send({ error: error.message })
+    } catch (err) {
+        next(err)
     }
 })
 
 
-router.patch("/updateBalance", async (req, res) => {
+router.patch("/updateBalance", async (req, res, next) => {
     try {
 
         let update = req.body
+          // tratando erros
+          if (!update.id || update.balance == null) {
+            throw new Error("Id e Balance são obrigatórios")
+        }
         const data = JSON.parse(await readFile(global.filename))
         let index = data.accounts.findIndex(idu => idu.id == update.id)
+
+        if (index === -1){
+            throw new Error("Registro inválido")
+        }
 
         data.accounts[index].balance = update.balance
         await writeFile(global.filename, JSON.stringify(data, null, 2))
         console.log(index)
 
         res.send(data.accounts[index])
-    } catch (error) {
-        res.status(400).send({ error: error.message })
+    } catch (err) {
+        next(err)
     }
+})
+
+
+router.use((err, req, res, next) => {
+    console.log(err)
+    res.status(400).send({ error: err.message })
 })
 
 
