@@ -69,6 +69,40 @@ router.delete("/:id", async (req, res) => {
     }
 })
 
+router.put("/", async (req, res) => {
+    try {
+
+        let update = req.body
+        const data = JSON.parse(await readFile(global.filename))
+        let index = data.accounts.findIndex(idu => idu.id == update.id)
+
+        data.accounts[index] = update
+        await writeFile(global.filename, JSON.stringify(data, null, 2))
+        console.log(index)
+
+        res.send(update)
+    } catch (error) {
+        res.status(400).send({ error: error.message })
+    }
+})
+
+
+router.patch("/updateBalance", async (req, res) => {
+    try {
+
+        let update = req.body
+        const data = JSON.parse(await readFile(global.filename))
+        let index = data.accounts.findIndex(idu => idu.id == update.id)
+
+        data.accounts[index].balance = update.balance
+        await writeFile(global.filename, JSON.stringify(data, null, 2))
+        console.log(index)
+
+        res.send(data.accounts[index])
+    } catch (error) {
+        res.status(400).send({ error: error.message })
+    }
+})
 
 
 
