@@ -1,8 +1,4 @@
 import service from "../service/account.service.js"
-import { promises as fs } from "fs"
-
-
-const  { readFile, writeFile} = fs
 
 async function createAccount(req, res, next){
 
@@ -46,7 +42,7 @@ async function getIdAccount(req, res, next)  {
 
 async function deleteAccount(req, res, next)  {
     try {
-        const resp = await service.deleteService(req.params.id)
+        await service.deleteService(req.params.id)
         res.send(`Deletado`)
     } catch (error) {
         next(error)
