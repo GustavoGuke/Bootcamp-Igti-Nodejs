@@ -1,24 +1,9 @@
 {
-  "nextId": 4,
+  "nextId": 2,
   "accounts": [
     {
-      "id": 0,
-      "name": "kerolin",
-      "balance": 7.5
-    },
-    {
       "id": 1,
-      "name": "Gustavo",
-      "balance": 1.5
-    },
-    {
-      "id": 2,
-      "name": "Gustavo",
-      "balance": 300
-    },
-    {
-      "id": 3,
-      "name": "Gustavo",
+      "name": "kerolin",
       "balance": 100
     }
   ]
